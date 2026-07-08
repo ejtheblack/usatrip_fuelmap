@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 美西自駕油資地圖</title>
+<meta name="theme-color" content="#1c1c1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="美西油資地圖">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c1c1a; --paper:#fbfaf6; --card:#ffffff; --line:#dcd8cf;
+  --muted:#6f6b62; --warn:#a05c12; --warn-bg:#f8efdd;
+  --r1:#4a7c59; --r2:#c08a2d; --r3:#b0492e; --r4:#33688f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.7}
+.band{background:var(--ink);color:#fff;padding:18px 24px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.band h1{font-family:'Oswald','Noto Sans TC',sans-serif;font-weight:600;font-size:24px;letter-spacing:.5px}
+.band .sub{font-size:13px;color:#c9c5bb}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:1001;overflow-x:auto}
+.tab{flex:1;min-width:120px;padding:12px 10px;border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);border-top:4px solid transparent;white-space:nowrap}
+.tab .en{display:block;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.tab.active{color:var(--ink);background:#fff}
+.tab.active[data-route="all"]{border-top-color:var(--ink)}
+.tab.active[data-route="r1"]{border-top-color:var(--r1)}
+.tab.active[data-route="r2"]{border-top-color:var(--r2)}
+.tab.active[data-route="r3"]{border-top-color:var(--r3)}
+.tab.active[data-route="r4"]{border-top-color:var(--r4)}
+.wrap{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,1fr);gap:0;min-height:calc(100vh - 130px)}
+#map{height:100%;min-height:460px;border-right:1px solid var(--line)}
+.panel{padding:20px 22px;overflow-y:auto;background:var(--paper)}
+.panel h2{font-family:'Oswald','Noto Sans TC',sans-serif;font-size:19px;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.swatch{width:14px;height:14px;border-radius:2px;flex:none}
+.panel .veh{font-size:13px;color:var(--muted);margin-bottom:14px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.metric{background:var(--card);border:1px solid var(--line);padding:10px 12px}
+.metric .lab{font-size:11px;letter-spacing:1px;color:var(--muted)}
+.metric .val{font-family:'Oswald','Noto Sans TC',sans-serif;font-size:22px;font-weight:500}
+.metric .note{font-size:11px;color:var(--muted)}
+.sliderbox{background:var(--card);border:1px solid var(--line);padding:12px 14px;margin-bottom:16px}
+.sliderbox label{font-size:13px;font-weight:500;display:flex;justify-content:space-between;margin-bottom:6px}
+.sliderbox input[type=range]{width:100%;accent-color:var(--ink)}
+.sliderbox .hint{font-size:11px;color:var(--muted);margin-top:4px}
+.sec{font-family:'Oswald','Noto Sans TC',sans-serif;font-size:13px;letter-spacing:2px;font-weight:600;border-bottom:2px solid var(--ink);padding-bottom:4px;margin:18px 0 10px}
+.dayrow{display:flex;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.dayrow .d{font-family:'Oswald',sans-serif;font-weight:600;flex:none;width:52px}
+.dayrow .mi{flex:none;margin-left:auto;color:var(--muted);white-space:nowrap}
+.stop{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;margin-bottom:6px;background:var(--card);border:1px solid var(--line);cursor:pointer;font-size:13.5px}
+.stop:hover{border-color:var(--ink)}
+.stop .ico{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;margin-top:2px}
+.stop .nm{font-weight:500}
+.stop .nt{font-size:12.5px;color:var(--muted)}
+.warnbox{background:var(--warn-bg);border-left:4px solid var(--warn);padding:10px 12px;font-size:13px;color:#5d3a0c;margin-top:14px}
+.ratebar{display:flex;align-items:center;gap:8px;padding:10px 24px;background:#efece4;border-top:1px solid var(--line);font-size:13px;flex-wrap:wrap}
+.ratebar input{width:70px;padding:4px 8px;border:1px solid var(--line);font-family:'Oswald',sans-serif;font-size:14px;background:#fff}
+.ratebar .src{margin-left:auto;color:var(--muted);font-size:12px}
+.pin{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;font-family:'Noto Sans TC',sans-serif}
+.leaflet-popup-content{font-family:'Noto Sans TC',sans-serif;font-size:13px;line-height:1.6}
+.leaflet-popup-content b{font-size:14px}
+.legend{background:rgba(255,255,255,.94);border:1px solid var(--line);padding:8px 12px;font-size:12px;line-height:1.9;white-space:nowrap}
+.legend .row{display:flex;align-items:center;gap:7px}
+.legend .dot{width:12px;height:12px;border-radius:50%;flex:none}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr}
+  #map{min-height:52vh;border-right:none;border-bottom:1px solid var(--line)}
+  .panel{max-height:none}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <h1>2026 美西自駕油資地圖</h1>
+  <span class="sub">四條路線 · 精準加油節點 · 油價即時試算</span>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-route="all"><span class="en">Overview</span>總覽</button>
+  <button class="tab" data-route="r1"><span class="en">Yosemite</span>1 優勝美地</button>
+  <button class="tab" data-route="r2"><span class="en">Yellowstone</span>2 大蒂頓＋黃石</button>
+  <button class="tab" data-route="r3"><span class="en">Page &amp; Zion</span>3 佩吉＋錫安</button>
+  <button class="tab" data-route="r4"><span class="en">Highway 1</span>4 一號公路</button>
+</nav>
+
+<div class="wrap">
+  <div id="map"></div>
+  <aside class="panel" id="panel"></aside>
+</div>
+
+<div class="ratebar">
+  <span>台幣匯率 1 USD =</span>
+  <input type="number" id="rate" value="32" step="0.1" min="25" max="40"> <span>NTD</span>
+  <span class="src">油價基準：2026 年 7 月初 AAA 均價，出發前請以 GasBuddy 複核</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+if (typeof L === 'undefined') {
+  document.getElementById('map').innerHTML = '<p style="padding:24px;color:#6f6b62">地圖程式庫載入失敗：請確認網路連線後重新整理。</p>';
+  throw new Error('Leaflet failed to load');
+}
+</script>
+<script>
+const ROUTES = {
+  r1: {
+    name: '1. 桑尼維爾 往返 優勝美地', color: '#4a7c59',
+    veh: '中型 SUV（約 25 mpg）· 來回含山區繞行',
+    miles: 450, mpg: 25, pmin: 5.0, pmax: 6.0, pdef: 5.6,
+    days: [
+      {d:'去程', t:'Sunnyvale 加滿 → 120 號公路 → Manteca / Oakdale 補滿 → 優勝美地', mi:'約 210 哩'},
+      {d:'園區', t:'谷地與 Glacier Point 等山區繞行', mi:'約 60 哩'},
+      {d:'回程', t:'原路下山返回 Sunnyvale', mi:'約 180 哩'}
+    ],
+    stops: [
+      {n:'Sunnyvale（出發加滿）', lat:37.3688, lng:-122.0363, k:'fuel', note:'Costco 或大連鎖站，出發前加滿第一桶。'},
+      {n:'曼提卡 Manteca（強迫補滿）', lat:37.7974, lng:-121.2161, k:'fuel', note:'120 號公路山腳大市鎮，進山前務必補滿。'},
+      {n:'橡谷鎮 Oakdale（備援補滿）', lat:37.7666, lng:-120.8472, k:'fuel', note:'錯過 Manteca 的最後平價備援。'},
+      {n:'Groveland（山門小鎮・油價高）', lat:37.8388, lng:-120.2327, k:'warn', note:'山門小鎮油價明顯偏高，非必要不加。'},
+      {n:'優勝美地谷地', lat:37.7456, lng:-119.5936, k:'sight', note:'園區內油源稀少且貴，靠山下滿油進出。'}
+    ],
+    paths: [
+      {pts:[[37.3688,-122.0363],[37.6605,-121.8747],[37.7397,-121.4252],[37.7974,-121.2161],[37.7666,-120.8472],[37.8388,-120.2327],[37.8180,-120.0930],[37.7456,-119.5936]], dash:null, lab:'去回同路'}
+    ],
+    warn: 'Groveland、El Portal 等山門小鎮與園區內油價更高，非必要不在山裡加油。'
+  },
+  r2: {
+    name: '2. 大蒂頓＋黃石（南進北出）', color: '#c08a2d',
+    veh: '中型 SUV（約 25 mpg）· 4 天 3 夜 · 全程住園區內',
+    miles: 470, mpg: 25, pmin: 3.9, pmax: 4.8, pdef: 4.35,
+    days: [
+      {d:'Day 1', t:'傑克森補滿 → 大蒂頓 → 南門進園', mi:'約 130 哩'},
+      {d:'Day 2', t:'間歇泉區 → 西口西黃石補給 → 峽谷區', mi:'約 110 哩'},
+      {d:'Day 3', t:'Hayden Valley → Lamar Valley → 猛獁溫泉', mi:'約 140 哩'},
+      {d:'Day 4', t:'北門出園 → Belgrade 滿油還車', mi:'約 90 哩'}
+    ],
+    stops: [
+      {n:'Jackson 鎮（取車日補滿）', lat:43.4799, lng:-110.7624, k:'fuel', note:'機場取車後往南約 9 哩到鎮上加滿。'},
+      {n:'Jenny Lake（大蒂頓）', lat:43.7512, lng:-110.7224, k:'sight', note:'大蒂頓核心景區。'},
+      {n:'老忠實間歇泉', lat:44.4605, lng:-110.8281, k:'sight', note:'間歇泉區核心。'},
+      {n:'西黃石小鎮（中段補給）', lat:44.6621, lng:-111.1041, k:'fuel', note:'Day 2 順路繞出西口補滿，門戶鎮價約 $4.2–4.5。'},
+      {n:'峽谷區 Canyon Village', lat:44.7347, lng:-110.4867, k:'sight', note:'黃石大峽谷。'},
+      {n:'Lamar Valley（野生動物）', lat:44.8697, lng:-110.2180, k:'sight', note:'清晨傍晚看野牛與狼群；不去可省約 70 哩。'},
+      {n:'猛獁溫泉 Mammoth', lat:44.9766, lng:-110.7010, k:'sight', note:'Day 3 落腳點。'},
+      {n:'Belgrade 鎮（還車前滿油）', lat:45.7760, lng:-111.1769, k:'fuel', note:'BZN 機場旁，滿油交車。'}
+    ],
+    paths: [
+      {pts:[[43.4799,-110.7624],[43.7512,-110.7224],[44.1380,-110.6660],[44.4605,-110.8281],[44.6459,-110.8600],[44.7347,-110.4867],[44.9160,-110.4160],[44.9766,-110.7010],[45.0302,-110.7057],[45.6614,-110.5600],[45.7760,-111.1769]], dash:null, lab:'主線（南進北出）'},
+      {pts:[[44.6459,-110.8600],[44.6621,-111.1041]], dash:'6 6', lab:'西口補給繞行'},
+      {pts:[[44.9160,-110.4160],[44.8697,-110.2180]], dash:'6 6', lab:'Lamar 繞行'}
+    ],
+    warn: 'Jackson 與西黃石為門戶鎮價（約 $4.2–4.5），高於懷俄明州均價 $3.85，但比園區內划算。'
+  },
+  r3: {
+    name: '3. 拉斯維加斯 往返 佩吉（回程經錫安）', color: '#b0492e',
+    veh: '7 人座（約 19 mpg）· 4 天 3 夜',
+    miles: 600, mpg: 19, pmin: 3.9, pmax: 4.8, pdef: 4.3,
+    days: [
+      {d:'Day 1', t:'維加斯加滿 → 直奔佩吉（經 St. George 可順路補油）', mi:'約 280 哩'},
+      {d:'Day 2', t:'羚羊峽谷、馬蹄灣、鮑威爾湖在地移動', mi:'約 40 哩'},
+      {d:'Day 3', t:'佩吉灌滿 → 東門進錫安、穿 Mt Carmel 隧道 → 宿 Springdale', mi:'約 115 哩'},
+      {d:'Day 4', t:'一早搭接駁遊錫安峽谷 → 回維加斯', mi:'約 165 哩'}
+    ],
+    stops: [
+      {n:'Las Vegas（出發加滿）', lat:36.1699, lng:-115.1398, k:'fuel', note:'全程最貴的一桶（內華達均價約 $4.61），避開 Strip 附近加油。'},
+      {n:'St. George（全程最便宜）', lat:37.0965, lng:-113.5684, k:'fuel', note:'猶他均價約 $3.86，去回程都可順路補。'},
+      {n:'Hurricane（回程備援）', lat:37.1753, lng:-113.2899, k:'fuel', note:'離開錫安後第一個平價補油點。'},
+      {n:'佩吉 Page（回程前灌滿）', lat:36.9147, lng:-111.4558, k:'fuel', note:'Maverik 等大站，約 $4 出頭，Day 3 離開前灌滿。'},
+      {n:'馬蹄灣 Horseshoe Bend', lat:36.8791, lng:-111.5104, k:'sight', note:'佩吉在地景點。'},
+      {n:'羚羊峽谷', lat:36.8619, lng:-111.3743, k:'sight', note:'需預約導覽。'},
+      {n:'錫安東門・Mt Carmel 隧道', lat:37.2312, lng:-112.8722, k:'sight', note:'7 人座休旅通過免護送，不受限制。'},
+      {n:'Springdale（油價高・別加油）', lat:37.1889, lng:-112.9989, k:'warn', note:'觀光鎮油價偏高，撐到 Hurricane 或 St. George 再補。'}
+    ],
+    paths: [
+      {pts:[[36.1699,-115.1398],[36.8055,-114.0672],[37.0965,-113.5684],[37.1753,-113.2899],[36.9990,-112.9800],[36.9460,-112.5300],[37.0475,-112.5263],[36.9147,-111.4558]], dash:null, lab:'去程（Day 1 直奔佩吉）'},
+      {pts:[[36.9147,-111.4558],[37.2439,-112.6786],[37.2312,-112.8722],[37.1889,-112.9989],[37.1753,-113.2899],[37.0965,-113.5684],[36.8055,-114.0672],[36.1699,-115.1398]], dash:'8 6', lab:'回程（Day 3–4 經錫安）'}
+    ],
+    warn: 'Springdale 是觀光鎮、油價偏高，盡量不在此加油；若加碼布萊斯峽谷，總里程加約 150 哩。'
+  },
+  r4: {
+    name: '4. 洛杉磯 到 桑尼維爾（一號公路單程）', color: '#33688f',
+    veh: '中型 SUV（約 24 mpg）· 海岸線蜿蜒',
+    miles: 455, mpg: 24, pmin: 5.0, pmax: 6.0, pdef: 5.6,
+    days: [
+      {d:'上段', t:'L.A. 郊區加滿 → Malibu → Santa Barbara → San Luis Obispo 強迫補滿', mi:'約 210 哩'},
+      {d:'中段', t:'Morro Bay → Cambria → 大蘇爾斷崖海岸', mi:'約 120 哩'},
+      {d:'下段', t:'Bixby Bridge → Monterey → Santa Cruz → Sunnyvale', mi:'約 125 哩'}
+    ],
+    stops: [
+      {n:'L.A. 郊區（出發加滿）', lat:34.0195, lng:-118.4912, k:'fuel', note:'用 Costco 或比價 App 加滿第一桶。'},
+      {n:'聖路易斯-奧比斯保 SLO（強迫補滿）', lat:35.2828, lng:-120.6596, k:'fuel', note:'進大蘇爾前最後的大城，務必補滿。'},
+      {n:'Cambria（最後備援）', lat:35.5641, lng:-121.0807, k:'fuel', note:'Morro Bay 之後的最後備援，之後 90 哩幾乎無平價油。'},
+      {n:'大蘇爾 Big Sur（單線管制）', lat:36.2704, lng:-121.8081, k:'warn', note:'以北路段單線管制至 2026/7/31，多留時間；Gorda 油價全美最貴等級。'},
+      {n:'Bixby Bridge', lat:36.3715, lng:-121.9016, k:'sight', note:'經典拍照點。'},
+      {n:'Monterey', lat:36.6002, lng:-121.8947, k:'sight', note:'回到正常油價區。'},
+      {n:'Sunnyvale（終點）', lat:37.3688, lng:-122.0363, k:'sight', note:'單程終點。'}
+    ],
+    paths: [
+      {pts:[[34.0195,-118.4912],[34.0259,-118.7798],[34.2805,-119.2945],[34.4208,-119.6982],[34.9530,-120.4357],[35.2828,-120.6596],[35.3658,-120.8499],[35.5641,-121.0807],[35.7794,-121.3283],[36.2704,-121.8081],[36.3715,-121.9016],[36.6002,-121.8947],[36.9741,-122.0308],[37.3688,-122.0363]], dash:null, lab:'一號公路北上'}
+    ],
+    warn: '一號公路已於 2026 年 1 月全線重開；Big Sur 以北有單線管制至 7/31。加州油價回落中，8 月後平均油價有望降至 $5.0–5.5。'
+  }
+};
+
+const map = L.map('map', {zoomSnap:0.5}).setView([38.5,-116.5], 5);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:18
+}).addTo(map);
+
+const legend = L.control({position:'bottomleft'});
+legend.onAdd = () => {
+  const d = L.DomUtil.create('div','legend');
+  d.innerHTML = '<div class="row"><span class="dot" style="background:#1c1c1a"></span>加油節點</div>'
+    + '<div class="row"><span class="dot" style="background:#a05c12"></span>油價陷阱／路況提醒</div>'
+    + '<div class="row"><span class="dot" style="background:#8b8778"></span>景點／地標</div>'
+    + '<div class="row"><span style="border-top:2px dashed #888;width:14px"></span>繞行或回程</div>';
+  return d;
+};
+legend.addTo(map);
+
+const layerGroups = {}; const markerRefs = {};
+function pinIcon(kind, color){
+  let bg, txt, size;
+  if(kind==='fuel'){ bg='#1c1c1a'; txt='油'; size=26; }
+  else if(kind==='warn'){ bg='#a05c12'; txt='!'; size=24; }
+  else { bg='#8b8778'; txt='·'; size=18; }
+  return L.divIcon({className:'', html:`<div class="pin" style="width:${size}px;height:${size}px;background:${bg};outline:2px solid ${color}">${txt}</div>`, iconSize:[size,size], iconAnchor:[size/2,size/2]});
+}
+
+Object.entries(ROUTES).forEach(([id,r])=>{
+  const g = L.layerGroup(); markerRefs[id]=[];
+  r.paths.forEach(p=>{
+    L.polyline(p.pts, {color:r.color, weight:4, opacity:.85, dashArray:p.dash}).bindTooltip(p.lab,{sticky:true}).addTo(g);
+  });
+  r.stops.forEach((s,i)=>{
+    const m = L.marker([s.lat,s.lng], {icon:pinIcon(s.k, r.color)})
+      .bindPopup(`<b>${s.n}</b><br>${s.note}`);
+    m.addTo(g); markerRefs[id].push(m);
+  });
+  layerGroups[id]=g;
+});
+
+let current='all';
+function boundsOf(ids){
+  let b=null;
+  ids.forEach(id=>ROUTES[id].paths.forEach(p=>p.pts.forEach(pt=>{
+    b = b? b.extend(pt) : L.latLngBounds(pt,pt);
+  })));
+  return b;
+}
+function show(routeId){
+  current=routeId;
+  Object.values(layerGroups).forEach(g=>map.removeLayer(g));
+  const ids = routeId==='all'? Object.keys(ROUTES) : [routeId];
+  ids.forEach(id=>layerGroups[id].addTo(map));
+  map.fitBounds(boundsOf(ids).pad(0.12));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.route===routeId));
+  renderPanel(routeId);
+}
+
+const fmtUSD = n=>'$'+Math.round(n).toLocaleString();
+function ntRound(n){ return 'NT$'+(Math.round(n/50)*50).toLocaleString(); }
+function rate(){ return parseFloat(document.getElementById('rate').value)||32; }
+
+function calc(r, price){
+  const gal = r.miles/r.mpg;
+  const usd = gal*price;
+  return {gal, usd, nt: usd*rate()};
+}
+
+function routeCard(id){
+  const r = ROUTES[id];
+  const c = calc(r, r.pdef);
+  return `
+  <h2><span class="swatch" style="background:${r.color}"></span>${r.name}</h2>
+  <p class="veh">${r.veh}</p>
+  <div class="metrics">
+    <div class="metric"><div class="lab">估算里程</div><div class="val">${r.miles} <small>哩</small></div><div class="note">${(r.miles/r.mpg).toFixed(1)} 加侖</div></div>
+    <div class="metric"><div class="lab">預估總油錢</div><div class="val" id="usd-${id}">${fmtUSD(c.usd)}</div><div class="note" id="nt-${id}">${ntRound(c.nt)}</div></div>
+  </div>
+  <div class="sliderbox">
+    <label>平均油價試算 <span id="pv-${id}" style="font-family:'Oswald'">$${r.pdef.toFixed(2)}/gal</span></label>
+    <input type="range" min="${r.pmin}" max="${r.pmax}" step="0.05" value="${r.pdef}" data-route="${id}" class="pslider">
+    <div class="hint">區間 $${r.pmin.toFixed(2)}–$${r.pmax.toFixed(2)}；拖動即時重算</div>
+  </div>
+  <div class="sec">逐日走法 ITINERARY</div>
+  ${r.days.map(d=>`<div class="dayrow"><span class="d">${d.d}</span><span>${d.t}</span><span class="mi">${d.mi}</span></div>`).join('')}
+  <div class="sec">加油節點與地標 STOPS</div>
+  ${r.stops.map((s,i)=>{
+    const bg = s.k==='fuel'?'#1c1c1a': s.k==='warn'?'#a05c12':'#8b8778';
+    const t = s.k==='fuel'?'油': s.k==='warn'?'!':'·';
+    return `<div class="stop" data-route="${id}" data-i="${i}"><span class="ico" style="background:${bg}">${t}</span><span><span class="nm">${s.n}</span><br><span class="nt">${s.note}</span></span></div>`;
+  }).join('')}
+  <div class="warnbox">${r.warn}</div>`;
+}
+
+function renderPanel(routeId){
+  const p = document.getElementById('panel');
+  if(routeId==='all'){
+    p.innerHTML = `<h2>總覽 OVERVIEW</h2>
+      <p class="veh">四條路線合計試算（各以預設油價計）</p>
+      ${Object.keys(ROUTES).map(id=>{
+        const r=ROUTES[id]; const c=calc(r,r.pdef);
+        return `<div class="stop" data-goto="${id}"><span class="ico" style="background:${r.color}">${id.slice(1)}</span><span><span class="nm">${r.name}</span><br><span class="nt">${r.miles} 哩 · ${fmtUSD(c.usd)}（${ntRound(c.nt)}）</span></span></div>`;
+      }).join('')}
+      <div class="sec">合計 TOTAL</div>
+      <div class="metrics">
+        <div class="metric"><div class="lab">四程總里程</div><div class="val" id="tot-mi"></div></div>
+        <div class="metric"><div class="lab">四程總油錢</div><div class="val" id="tot-usd"></div><div class="note" id="tot-nt"></div></div>
+      </div>
+      <div class="warnbox">油價為 2026 年 7 月初水準且持續回落中；點各路線卡片可切換至該路線的滑桿試算。</div>`;
+    let mi=0, usd=0;
+    Object.values(ROUTES).forEach(r=>{ mi+=r.miles; usd+=calc(r,r.pdef).usd; });
+    document.getElementById('tot-mi').textContent = mi.toLocaleString()+' 哩';
+    document.getElementById('tot-usd').textContent = fmtUSD(usd);
+    document.getElementById('tot-nt').textContent = ntRound(usd*rate());
+    p.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>show(el.dataset.goto)));
+  } else {
+    p.innerHTML = routeCard(routeId);
+    p.querySelectorAll('.pslider').forEach(sl=>sl.addEventListener('input', ()=>{
+      const id=sl.dataset.route, r=ROUTES[id], price=parseFloat(sl.value);
+      const c=calc(r,price);
+      document.getElementById('pv-'+id).textContent='$'+price.toFixed(2)+'/gal';
+      document.getElementById('usd-'+id).textContent=fmtUSD(c.usd);
+      document.getElementById('nt-'+id).textContent=ntRound(c.nt);
+    }));
+    p.querySelectorAll('.stop[data-i]').forEach(el=>el.addEventListener('click',()=>{
+      const m = markerRefs[el.dataset.route][+el.dataset.i];
+      map.setView(m.getLatLng(), Math.max(map.getZoom(), 9));
+      m.openPopup();
+    }));
+  }
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>show(t.dataset.route)));
+document.getElementById('rate').addEventListener('input',()=>renderPanel(current));
+show('all');
+</script>
+</body>
+</html>
