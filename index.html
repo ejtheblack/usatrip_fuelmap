@@ -112,19 +112,19 @@ if (typeof L === 'undefined') {
 const ROUTES = {
   r1: {
     name: '1. 桑尼維爾 往返 優勝美地', color: '#4a7c59',
-    veh: '中型 SUV（約 25 mpg）· 來回含山區繞行',
-    miles: 450, mpg: 25, pmin: 5.0, pmax: 6.0, pdef: 5.6,
+    veh: '中型 SUV（約 25 mpg）· 2 天 1 夜 · 宿 The Ahwahnee',
+    miles: 430, mpg: 25, pmin: 5.0, pmax: 6.0, pdef: 5.6,
+    rent: {days:2, dlo:55, dhi:100, ddef:78, label:'2 天', note:'南灣中型 SUV 含稅約 $65–90/天；開自家車可拉到最低值視為 0 參考'},
     days: [
-      {d:'去程', t:'Sunnyvale 加滿 → 120 號公路 → Manteca / Oakdale 補滿 → 優勝美地', mi:'約 210 哩'},
-      {d:'園區', t:'谷地與 Glacier Point 等山區繞行', mi:'約 60 哩'},
-      {d:'回程', t:'原路下山返回 Sunnyvale', mi:'約 180 哩'}
+      {d:'Day 1', t:'Sunnyvale 加滿 → Manteca / Oakdale 補滿 → 120 號進園 → 谷地景點 → 宿 The Ahwahnee', mi:'約 230 哩'},
+      {d:'Day 2', t:'清晨谷地散步 → Glacier Point 繞行（visitor 中心確認開放）→ 原路下山回 Sunnyvale', mi:'約 200 哩'}
     ],
     stops: [
       {n:'Sunnyvale（出發加滿）', lat:37.3688, lng:-122.0363, k:'fuel', note:'Costco 或大連鎖站，出發前加滿第一桶。'},
       {n:'曼提卡 Manteca（強迫補滿）', lat:37.7974, lng:-121.2161, k:'fuel', note:'120 號公路山腳大市鎮，進山前務必補滿。'},
       {n:'橡谷鎮 Oakdale（備援補滿）', lat:37.7666, lng:-120.8472, k:'fuel', note:'錯過 Manteca 的最後平價備援。'},
       {n:'Groveland（山門小鎮・油價高）', lat:37.8388, lng:-120.2327, k:'warn', note:'山門小鎮油價明顯偏高，非必要不加。'},
-      {n:'優勝美地谷地', lat:37.7456, lng:-119.5936, k:'sight', note:'園區內油源稀少且貴，靠山下滿油進出。'}
+      {n:'The Ahwahnee（谷地住宿）', lat:37.7466, lng:-119.5741, k:'sight', note:'谷地內經典飯店，住這裡的好處是清晨無人時段就在景區裡；園區內油源稀少且貴，靠山下滿油進出。'}
     ],
     paths: [
       {pts:[[37.3688,-122.0363],[37.6605,-121.8747],[37.7397,-121.4252],[37.7974,-121.2161],[37.7666,-120.8472],[37.8388,-120.2327],[37.8180,-120.0930],[37.7456,-119.5936]], dash:null, lab:'去回同路'}
@@ -132,36 +132,39 @@ const ROUTES = {
     warn: 'Groveland、El Portal 等山門小鎮與園區內油價更高，非必要不在山裡加油。'
   },
   r2: {
-    name: '2. 大蒂頓＋黃石（南進北出）', color: '#c08a2d',
-    veh: '中型 SUV（約 25 mpg）· 4 天 3 夜 · 全程住園區內',
-    miles: 470, mpg: 25, pmin: 3.9, pmax: 4.8, pdef: 4.35,
+    name: '2. 大蒂頓＋黃石（JAC 進出）', color: '#c08a2d',
+    veh: '中型 SUV（約 25 mpg）· 4 天 3 夜 · 全程住園區內 · JAC 同點取還',
+    miles: 510, mpg: 25, pmin: 3.9, pmax: 4.8, pdef: 4.35,
+    rent: {days:4, dlo:100, dhi:180, ddef:130, label:'4 天（JAC 同點）', note:'JAC 夏季 SUV 約 $110–150/天含稅；同點還車省 $150–300 異地費，提前 2–3 個月訂'},
     days: [
-      {d:'Day 1', t:'傑克森補滿 → 大蒂頓 → 南門進園', mi:'約 130 哩'},
-      {d:'Day 2', t:'間歇泉區 → 西口西黃石補給 → 峽谷區', mi:'約 110 哩'},
-      {d:'Day 3', t:'Hayden Valley → Lamar Valley → 猛獁溫泉', mi:'約 140 哩'},
-      {d:'Day 4', t:'北門出園 → Belgrade 滿油還車', mi:'約 90 哩'}
+      {d:'Day 1', t:'傑克森補滿 → 大蒂頓 → 老忠實', mi:'約 130 哩'},
+      {d:'Day 2', t:'間歇泉區 → 西口西黃石補給 → 猛獁溫泉', mi:'約 110 哩'},
+      {d:'Day 3', t:'Lamar Valley → 峽谷區 → 湖區', mi:'約 150 哩'},
+      {d:'Day 4', t:'南門出園 → 大蒂頓 → Jackson 滿油還車', mi:'約 120 哩'}
     ],
     stops: [
-      {n:'Jackson 鎮（取車日補滿）', lat:43.4799, lng:-110.7624, k:'fuel', note:'機場取車後往南約 9 哩到鎮上加滿。'},
-      {n:'Jenny Lake（大蒂頓）', lat:43.7512, lng:-110.7224, k:'sight', note:'大蒂頓核心景區。'},
-      {n:'老忠實間歇泉', lat:44.4605, lng:-110.8281, k:'sight', note:'間歇泉區核心。'},
+      {n:'Jackson 鎮（取車補滿・還車滿油）', lat:43.4799, lng:-110.7624, k:'fuel', note:'機場往南約 9 哩到鎮上；Day 1 加滿、Day 4 還車前在此滿油交車。'},
+      {n:'Jenny Lake（大蒂頓）', lat:43.7512, lng:-110.7224, k:'sight', note:'大蒂頓核心景區，去回程都會經過。'},
+      {n:'老忠實間歇泉', lat:44.4605, lng:-110.8281, k:'sight', note:'間歇泉區核心，Day 1 落腳點。'},
       {n:'西黃石小鎮（中段補給）', lat:44.6621, lng:-111.1041, k:'fuel', note:'Day 2 順路繞出西口補滿，門戶鎮價約 $4.2–4.5。'},
+      {n:'猛獁溫泉 Mammoth', lat:44.9766, lng:-110.7010, k:'sight', note:'Day 2 落腳點，北端折返處。'},
+      {n:'Lamar Valley（野生動物）', lat:44.8697, lng:-110.2180, k:'sight', note:'清晨看野牛與狼群；不去可省約 70 哩。'},
       {n:'峽谷區 Canyon Village', lat:44.7347, lng:-110.4867, k:'sight', note:'黃石大峽谷。'},
-      {n:'Lamar Valley（野生動物）', lat:44.8697, lng:-110.2180, k:'sight', note:'清晨傍晚看野牛與狼群；不去可省約 70 哩。'},
-      {n:'猛獁溫泉 Mammoth', lat:44.9766, lng:-110.7010, k:'sight', note:'Day 3 落腳點。'},
-      {n:'Belgrade 鎮（還車前滿油）', lat:45.7760, lng:-111.1769, k:'fuel', note:'BZN 機場旁，滿油交車。'}
+      {n:'黃石湖 West Thumb', lat:44.4160, lng:-110.5730, k:'sight', note:'Day 3 尾聲，隔天由此南下出園。'}
     ],
     paths: [
-      {pts:[[43.4799,-110.7624],[43.7512,-110.7224],[44.1380,-110.6660],[44.4605,-110.8281],[44.6459,-110.8600],[44.7347,-110.4867],[44.9160,-110.4160],[44.9766,-110.7010],[45.0302,-110.7057],[45.6614,-110.5600],[45.7760,-111.1769]], dash:null, lab:'主線（南進北出）'},
+      {pts:[[43.4799,-110.7624],[43.7512,-110.7224],[44.1380,-110.6660],[44.4160,-110.5730],[44.4605,-110.8281],[44.6459,-110.8600],[44.7260,-110.7030],[44.9766,-110.7010],[44.9160,-110.4160],[44.7347,-110.4867],[44.5450,-110.4000],[44.4160,-110.5730]], dash:null, lab:'園內主線（Day 1–3）'},
+      {pts:[[44.4160,-110.5730],[44.1380,-110.6660],[43.7512,-110.7224],[43.4799,-110.7624]], dash:'8 6', lab:'Day 4 回程（重複段）'},
       {pts:[[44.6459,-110.8600],[44.6621,-111.1041]], dash:'6 6', lab:'西口補給繞行'},
       {pts:[[44.9160,-110.4160],[44.8697,-110.2180]], dash:'6 6', lab:'Lamar 繞行'}
     ],
-    warn: 'Jackson 與西黃石為門戶鎮價（約 $4.2–4.5），高於懷俄明州均價 $3.85，但比園區內划算。'
+    warn: 'JAC 同點進出比南進北出多開約 40 哩（油錢多 $5–10），但省下 $150–300 異地還車費，總預算反而更省；JAC 旺季車輛常售罄，務必提早訂。'
   },
   r3: {
     name: '3. 拉斯維加斯 往返 佩吉（回程經錫安）', color: '#b0492e',
     veh: '7 人座（約 19 mpg）· 4 天 3 夜',
     miles: 600, mpg: 19, pmin: 3.9, pmax: 4.8, pdef: 4.3,
+    rent: {days:4, dlo:65, dhi:120, ddef:95, label:'4 天', note:'LAS 七人座底價約 $50–95/天，Clark County 稅費另加約兩成，此處為含稅日租'},
     days: [
       {d:'Day 1', t:'維加斯加滿 → 直奔佩吉（經 St. George 可順路補油）', mi:'約 280 哩'},
       {d:'Day 2', t:'羚羊峽谷、馬蹄灣、鮑威爾湖在地移動', mi:'約 40 哩'},
@@ -188,6 +191,7 @@ const ROUTES = {
     name: '4. 洛杉磯 到 桑尼維爾（一號公路單程）', color: '#33688f',
     veh: '中型 SUV（約 24 mpg）· 海岸線蜿蜒',
     miles: 455, mpg: 24, pmin: 5.0, pmax: 6.0, pdef: 5.6,
+    rent: {days:2, dlo:70, dhi:160, ddef:115, label:'假設 2 天＋單程', note:'約 $70–100/天；加州境內異地費多免收或 $50–100，已攤入日租上限'},
     days: [
       {d:'上段', t:'L.A. 郊區加滿 → Malibu → Santa Barbara → San Luis Obispo 強迫補滿', mi:'約 210 哩'},
       {d:'中段', t:'Morro Bay → Cambria → 大蘇爾斷崖海岸', mi:'約 120 哩'},
@@ -277,18 +281,28 @@ function calc(r, price){
 
 function routeCard(id){
   const r = ROUTES[id];
-  const c = calc(r, r.pdef);
+  const price = r.pcur ?? r.pdef;
+  const daily = r.rcur ?? r.rent.ddef;
+  const c = calc(r, price);
+  const rentTot = daily * r.rent.days;
   return `
   <h2><span class="swatch" style="background:${r.color}"></span>${r.name}</h2>
   <p class="veh">${r.veh}</p>
   <div class="metrics">
     <div class="metric"><div class="lab">估算里程</div><div class="val">${r.miles} <small>哩</small></div><div class="note">${(r.miles/r.mpg).toFixed(1)} 加侖</div></div>
     <div class="metric"><div class="lab">預估總油錢</div><div class="val" id="usd-${id}">${fmtUSD(c.usd)}</div><div class="note" id="nt-${id}">${ntRound(c.nt)}</div></div>
+    <div class="metric"><div class="lab">租車估算（${r.rent.label}）</div><div class="val" id="rent-${id}">${fmtUSD(rentTot)}</div><div class="note">${r.rent.note}</div></div>
+    <div class="metric"><div class="lab">油＋租車小計</div><div class="val" id="sub-${id}">${fmtUSD(c.usd+rentTot)}</div><div class="note" id="subnt-${id}">${ntRound((c.usd+rentTot)*rate())}</div></div>
   </div>
   <div class="sliderbox">
-    <label>平均油價試算 <span id="pv-${id}" style="font-family:'Oswald'">$${r.pdef.toFixed(2)}/gal</span></label>
-    <input type="range" min="${r.pmin}" max="${r.pmax}" step="0.05" value="${r.pdef}" data-route="${id}" class="pslider">
+    <label>平均油價試算 <span id="pv-${id}" style="font-family:'Oswald'">$${price.toFixed(2)}/gal</span></label>
+    <input type="range" min="${r.pmin}" max="${r.pmax}" step="0.05" value="${price}" data-route="${id}" class="pslider">
     <div class="hint">區間 $${r.pmin.toFixed(2)}–$${r.pmax.toFixed(2)}；拖動即時重算</div>
+  </div>
+  <div class="sliderbox">
+    <label>日租金試算（${r.rent.days} 天） <span id="rv-${id}" style="font-family:'Oswald'">$${daily}/天</span></label>
+    <input type="range" min="${r.rent.dlo}" max="${r.rent.dhi}" step="5" value="${daily}" data-route="${id}" class="rslider">
+    <div class="hint">區間 $${r.rent.dlo}–$${r.rent.dhi}/天（含稅概數）；拿到報價後拖到實際數字</div>
   </div>
   <div class="sec">逐日走法 ITINERARY</div>
   ${r.days.map(d=>`<div class="dayrow"><span class="d">${d.d}</span><span>${d.t}</span><span class="mi">${d.mi}</span></div>`).join('')}
@@ -314,22 +328,44 @@ function renderPanel(routeId){
       <div class="metrics">
         <div class="metric"><div class="lab">四程總里程</div><div class="val" id="tot-mi"></div></div>
         <div class="metric"><div class="lab">四程總油錢</div><div class="val" id="tot-usd"></div><div class="note" id="tot-nt"></div></div>
+        <div class="metric"><div class="lab">四程租車合計</div><div class="val" id="tot-rent"></div><div class="note">列 1、4 為假設天數</div></div>
+        <div class="metric"><div class="lab">油＋租車總預算</div><div class="val" id="tot-all"></div><div class="note" id="tot-allnt"></div></div>
       </div>
-      <div class="warnbox">油價為 2026 年 7 月初水準且持續回落中；點各路線卡片可切換至該路線的滑桿試算。</div>`;
-    let mi=0, usd=0;
-    Object.values(ROUTES).forEach(r=>{ mi+=r.miles; usd+=calc(r,r.pdef).usd; });
+      <div class="warnbox">油價為 2026 年 7 月初水準且持續回落中；租車為夏季含稅概數，不含保險加購（CDW 約 $15–35/天）。點各路線卡片可切換至滑桿試算。</div>`;
+    let mi=0, usd=0, rlo=0, rhi=0, rcur=0;
+    Object.values(ROUTES).forEach(r=>{
+      mi+=r.miles; usd+=calc(r, r.pcur ?? r.pdef).usd;
+      rlo+=r.rent.dlo*r.rent.days; rhi+=r.rent.dhi*r.rent.days;
+      rcur+=(r.rcur ?? r.rent.ddef)*r.rent.days;
+    });
     document.getElementById('tot-mi').textContent = mi.toLocaleString()+' 哩';
     document.getElementById('tot-usd').textContent = fmtUSD(usd);
     document.getElementById('tot-nt').textContent = ntRound(usd*rate());
+    document.getElementById('tot-rent').textContent = fmtUSD(rcur);
+    document.getElementById('tot-all').textContent = fmtUSD(usd+rcur);
+    document.getElementById('tot-allnt').textContent = ntRound((usd+rcur)*rate())+'（區間 '+fmtUSD(usd+rlo)+'–'+fmtUSD(usd+rhi)+'）';
     p.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>show(el.dataset.goto)));
   } else {
     p.innerHTML = routeCard(routeId);
-    p.querySelectorAll('.pslider').forEach(sl=>sl.addEventListener('input', ()=>{
-      const id=sl.dataset.route, r=ROUTES[id], price=parseFloat(sl.value);
-      const c=calc(r,price);
+    const refresh = id=>{
+      const r=ROUTES[id];
+      const price = r.pcur ?? r.pdef, daily = r.rcur ?? r.rent.ddef;
+      const c = calc(r, price), rentTot = daily*r.rent.days;
       document.getElementById('pv-'+id).textContent='$'+price.toFixed(2)+'/gal';
+      document.getElementById('rv-'+id).textContent='$'+daily+'/天';
       document.getElementById('usd-'+id).textContent=fmtUSD(c.usd);
       document.getElementById('nt-'+id).textContent=ntRound(c.nt);
+      document.getElementById('rent-'+id).textContent=fmtUSD(rentTot);
+      document.getElementById('sub-'+id).textContent=fmtUSD(c.usd+rentTot);
+      document.getElementById('subnt-'+id).textContent=ntRound((c.usd+rentTot)*rate());
+    };
+    p.querySelectorAll('.pslider').forEach(sl=>sl.addEventListener('input', ()=>{
+      ROUTES[sl.dataset.route].pcur = parseFloat(sl.value);
+      refresh(sl.dataset.route);
+    }));
+    p.querySelectorAll('.rslider').forEach(sl=>sl.addEventListener('input', ()=>{
+      ROUTES[sl.dataset.route].rcur = parseInt(sl.value, 10);
+      refresh(sl.dataset.route);
     }));
     p.querySelectorAll('.stop[data-i]').forEach(el=>el.addEventListener('click',()=>{
       const m = markerRefs[el.dataset.route][+el.dataset.i];
