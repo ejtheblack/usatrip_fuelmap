@@ -33,6 +33,19 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .tab.active[data-route="r2"]{border-top-color:var(--r2)}
 .tab.active[data-route="r3"]{border-top-color:var(--r3)}
 .tab.active[data-route="r4"]{border-top-color:var(--r4)}
+.tab.active[data-route="tl"]{border-top-color:var(--ink)}
+.tl-seg{font-family:'Oswald','Noto Sans TC',sans-serif;font-size:12px;letter-spacing:2px;font-weight:600;margin:16px 0 6px;display:flex;align-items:center;gap:8px}
+.tl-seg .swatch{width:12px;height:12px}
+.tl-day{display:flex;gap:10px;padding:8px 10px;margin-bottom:6px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);font-size:13.5px;line-height:1.6}
+.tl-day.link{cursor:pointer}
+.tl-day.link:hover{border-color:var(--ink);border-left-width:4px}
+.tl-date{flex:none;width:52px;font-family:'Oswald','Noto Sans TC',sans-serif;font-weight:600}
+.tl-date small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.tl-tags{margin-top:3px}
+.tl-tag{display:inline-block;font-size:11px;padding:1px 7px;margin-right:5px;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:2px}
+.tl-tag.fuel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tl-tag.fly{border-color:#33688f;color:#33688f}
+.tl-tag.car{border-color:#a05c12;color:#a05c12}
 .wrap{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,1fr);gap:0;min-height:calc(100vh - 130px)}
 #map{height:100%;min-height:460px;border-right:1px solid var(--line)}
 .panel{padding:20px 22px;overflow-y:auto;background:var(--paper)}
@@ -88,6 +101,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   <button class="tab" data-route="r2"><span class="en">Yellowstone</span>2 大蒂頓＋黃石</button>
   <button class="tab" data-route="r3"><span class="en">Page &amp; Zion</span>3 佩吉＋錫安</button>
   <button class="tab" data-route="r4"><span class="en">Highway 1</span>4 一號公路</button>
+  <button class="tab" data-route="tl"><span class="en">Timeline</span>時間軸 8/6–26</button>
 </nav>
 
 <div class="wrap">
@@ -112,12 +126,12 @@ if (typeof L === 'undefined') {
 const ROUTES = {
   r1: {
     name: '1. 桑尼維爾 往返 優勝美地', color: '#4a7c59',
-    veh: '中型 SUV（約 25 mpg）· 2 天 1 夜 · 宿 The Ahwahnee',
+    veh: '自家車（約 25 mpg）· 8/9–8/10 · 2 天 1 夜 · 宿 The Ahwahnee',
     miles: 430, mpg: 25, pmin: 5.0, pmax: 6.0, pdef: 5.6,
-    rent: {days:2, dlo:0, dhi:100, ddef:78, label:'2 天', note:'南灣中型 SUV 含稅約 $65–90/天；開自家車直接拉到 $0，小計即為純油錢'},
+    rent: {days:2, dlo:0, dhi:100, ddef:0, label:'2 天', note:'本次開自家車、租車為 $0；若改租車，南灣中型 SUV 含稅約 $65–90/天，拖動滑桿試算'},
     days: [
-      {d:'Day 1', t:'Sunnyvale 加滿 → Manteca / Oakdale 補滿 → 120 號進園 → 谷地景點 → 宿 The Ahwahnee', mi:'約 230 哩'},
-      {d:'Day 2', t:'清晨谷地散步 → Glacier Point 繞行（visitor 中心確認開放）→ 原路下山回 Sunnyvale', mi:'約 200 哩'}
+      {d:'8/9', t:'Sunnyvale 出發 → 120 號公路進園 → 谷地景點 → 宿 The Ahwahnee', mi:'約 230 哩'},
+      {d:'8/10', t:'清晨谷地散步 → Glacier Point 繞行（visitor 中心確認開放）→ 原路下山回灣區', mi:'約 200 哩'}
     ],
     stops: [
       {n:'Sunnyvale（出發加滿）', lat:37.3688, lng:-122.0363, k:'fuel', note:'Costco 或大連鎖站，出發前加滿第一桶。'},
@@ -135,12 +149,13 @@ const ROUTES = {
     name: '2. 大蒂頓＋黃石（JAC 進出）', color: '#c08a2d',
     veh: '7 人座 Chrysler Pacifica（約 22 mpg）· 8/11–8/15 JAC 同點取還 · Enterprise（Costco 方案）',
     miles: 510, mpg: 22, pmin: 3.9, pmax: 4.8, pdef: 4.35,
-    rent: {days:5, dlo:100, dhi:180, ddef:130, label:'8/11 13:30–8/15 17:00', note:'Costco 方案含第二駕駛、免費取消；4 天又 3.5 小時可能以 5 天計價，還車提前到 14:00 前可省一天'},
+    rent: {days:4, dlo:100, dhi:180, ddef:130, label:'8/11 13:30 取–8/15 還', note:'Costco 方案含第二駕駛、免費取消；航班 16:25 起飛，14:00 前還車既順路又控制在 4 個計費日內（原訂單 17:00 可改）'},
     days: [
-      {d:'Day 1', t:'傑克森補滿 → 大蒂頓 → 老忠實', mi:'約 130 哩'},
-      {d:'Day 2', t:'間歇泉區 → 西口西黃石補給 → 猛獁溫泉', mi:'約 110 哩'},
-      {d:'Day 3', t:'Lamar Valley → 峽谷區 → 湖區', mi:'約 150 哩'},
-      {d:'Day 4', t:'南門出園 → 大蒂頓 → Jackson 滿油還車', mi:'約 120 哩'}
+      {d:'8/11', t:'09:10 SFO 飛 JAC，13:30 取車 → 宿 Jackson Lake Lodge（大蒂頓）', mi:'約 50 哩'},
+      {d:'8/12', t:'大蒂頓遊覽 → 北上進黃石 → 宿 Canyon Lodge', mi:'約 120 哩'},
+      {d:'8/13', t:'黃石全日（Lamar／猛獁／間歇泉區）', mi:'約 170 哩'},
+      {d:'8/14', t:'黃石南下出園 → 宿 Jackson 鎮 airbnb', mi:'約 130 哩'},
+      {d:'8/15', t:'鎮上遊覽 → 14:00 前還車（16:25 飛 DEN 轉 LAS）', mi:'約 15 哩'}
     ],
     stops: [
       {n:'Jackson 鎮（取車補滿・還車滿油）', lat:43.4799, lng:-110.7624, k:'fuel', note:'機場往南約 9 哩到鎮上；Day 1 加滿、Day 4 還車前在此滿油交車。'},
@@ -161,31 +176,34 @@ const ROUTES = {
     warn: 'Pacifica 油箱 19 加侖、滿油續航約 400 哩以上，園內單日不超過 150 哩，照表定節點加油綽綽有餘；8 月中是黃石最旺季，老忠實與峽谷區停車場建議 09:00 前抵達。'
   },
   r3: {
-    name: '3. 拉斯維加斯 往返 佩吉（回程經錫安）', color: '#b0492e',
-    veh: '7 人座（約 19 mpg）· 4 天 3 夜',
-    miles: 600, mpg: 19, pmin: 3.9, pmax: 4.8, pdef: 4.3,
-    rent: {days:4, dlo:65, dhi:120, ddef:95, label:'4 天', note:'LAS 七人座底價約 $50–95/天，Clark County 稅費另加約兩成，此處為含稅日租'},
+    name: '3. 拉斯維加斯 往返 佩吉（含北緣・回程經錫安）', color: '#b0492e',
+    veh: '7 人座（約 19 mpg）· 8/15–8/19 · 4 天 3 夜＋大峽谷北緣',
+    miles: 800, mpg: 19, pmin: 3.9, pmax: 4.8, pdef: 4.3,
+    rent: {days:4, dlo:65, dhi:120, ddef:95, label:'8/15 晚–8/19（4 天）', note:'LAS 七人座底價約 $50–95/天，Clark County 稅費另加約兩成；8/15 晚取、8/19 午還，控制在 4 個計費日內'},
     days: [
-      {d:'Day 1', t:'維加斯加滿 → 直奔佩吉（經 St. George 可順路補油）', mi:'約 280 哩'},
-      {d:'Day 2', t:'羚羊峽谷、馬蹄灣、鮑威爾湖在地移動', mi:'約 40 哩'},
-      {d:'Day 3', t:'佩吉灌滿 → 東門進錫安、穿 Mt Carmel 隧道 → 宿 Springdale', mi:'約 115 哩'},
-      {d:'Day 4', t:'一早搭接駁遊錫安峽谷 → 回維加斯', mi:'約 165 哩'}
+      {d:'8/16', t:'維加斯出發 → 直奔佩吉 → 傍晚馬蹄灣', mi:'約 280 哩'},
+      {d:'8/17', t:'10:00 上羚羊導覽 → 大峽谷北緣（經 Jacob Lake）來回 → 宿佩吉', mi:'約 250 哩'},
+      {d:'8/18', t:'佩吉出發 → 東門進錫安、穿 Mt Carmel 隧道 → 宿 Springdale', mi:'約 115 哩'},
+      {d:'8/19', t:'一早搭接駁遊錫安峽谷 → 回維加斯還車 → 16:15 飛 LAX', mi:'約 160 哩'}
     ],
     stops: [
-      {n:'Las Vegas（出發加滿）', lat:36.1699, lng:-115.1398, k:'fuel', note:'全程最貴的一桶（內華達均價約 $4.61），避開 Strip 附近加油。'},
+      {n:'Las Vegas（8/15 晚取車・出發加滿）', lat:36.1699, lng:-115.1398, k:'fuel', note:'全程最貴的一桶（內華達均價約 $4.61），避開 Strip 附近加油。'},
       {n:'St. George（全程最便宜）', lat:37.0965, lng:-113.5684, k:'fuel', note:'猶他均價約 $3.86，去回程都可順路補。'},
       {n:'Hurricane（回程備援）', lat:37.1753, lng:-113.2899, k:'fuel', note:'離開錫安後第一個平價補油點。'},
-      {n:'佩吉 Page（回程前灌滿）', lat:36.9147, lng:-111.4558, k:'fuel', note:'Maverik 等大站，約 $4 出頭，Day 3 離開前灌滿。'},
-      {n:'馬蹄灣 Horseshoe Bend', lat:36.8791, lng:-111.5104, k:'sight', note:'佩吉在地景點。'},
-      {n:'羚羊峽谷', lat:36.8619, lng:-111.3743, k:'sight', note:'需預約導覽。'},
+      {n:'佩吉 Page（8/17 前晚與 8/18 離開前各灌滿）', lat:36.9147, lng:-111.4558, k:'fuel', note:'Maverik 等大站約 $4 出頭；北緣來回 250 哩，前一晚滿油出發最穩，Jacob Lake 與北緣雖有油但貴。'},
+      {n:'馬蹄灣 Horseshoe Bend', lat:36.8791, lng:-111.5104, k:'sight', note:'8/16 傍晚順光時段最美。'},
+      {n:'羚羊峽谷', lat:36.8619, lng:-111.3743, k:'sight', note:'已預約 8/17 上午 10:00 導覽。'},
+      {n:'Jacob Lake（北緣岔路口）', lat:36.7160, lng:-112.2160, k:'sight', note:'US-89A 與 AZ-67 交會點，往北緣最後 44 哩森林公路。'},
+      {n:'大峽谷北緣 North Rim', lat:36.1980, lng:-112.0525, k:'sight', note:'遊客中心與 Bright Angel Point；園內有加油站但價高，備援性質。'},
       {n:'錫安東門・Mt Carmel 隧道', lat:37.2312, lng:-112.8722, k:'sight', note:'7 人座休旅通過免護送，不受限制。'},
       {n:'Springdale（油價高・別加油）', lat:37.1889, lng:-112.9989, k:'warn', note:'觀光鎮油價偏高，撐到 Hurricane 或 St. George 再補。'}
     ],
     paths: [
-      {pts:[[36.1699,-115.1398],[36.8055,-114.0672],[37.0965,-113.5684],[37.1753,-113.2899],[36.9990,-112.9800],[36.9460,-112.5300],[37.0475,-112.5263],[36.9147,-111.4558]], dash:null, lab:'去程（Day 1 直奔佩吉）'},
-      {pts:[[36.9147,-111.4558],[37.2439,-112.6786],[37.2312,-112.8722],[37.1889,-112.9989],[37.1753,-113.2899],[37.0965,-113.5684],[36.8055,-114.0672],[36.1699,-115.1398]], dash:'8 6', lab:'回程（Day 3–4 經錫安）'}
+      {pts:[[36.1699,-115.1398],[36.8055,-114.0672],[37.0965,-113.5684],[37.1753,-113.2899],[36.9990,-112.9800],[36.9460,-112.5300],[37.0475,-112.5263],[36.9147,-111.4558]], dash:null, lab:'8/16 去程（直奔佩吉）'},
+      {pts:[[36.9147,-111.4558],[36.8180,-111.6320],[36.7160,-112.2160],[36.1980,-112.0525]], dash:'5 5', lab:'8/17 北緣來回'},
+      {pts:[[36.9147,-111.4558],[37.2439,-112.6786],[37.2312,-112.8722],[37.1889,-112.9989],[37.1753,-113.2899],[37.0965,-113.5684],[36.8055,-114.0672],[36.1699,-115.1398]], dash:'8 6', lab:'8/18–19 回程（經錫安）'}
     ],
-    warn: 'Springdale 是觀光鎮、油價偏高，盡量不在此加油；若加碼布萊斯峽谷，總里程加約 150 哩。'
+    warn: '北緣一日讓總里程從 600 上修到約 800 哩、油錢約 $165–200；8/19 還車前在維加斯近郊順路加滿即可（離 Strip 遠一點的站較便宜），航班 16:15、建議 13:30 前到還車中心。'
   },
   r4: {
     name: '4. 洛杉磯 到 桑尼維爾（一號公路單程）', color: '#33688f',
@@ -193,7 +211,7 @@ const ROUTES = {
     miles: 455, mpg: 24, pmin: 5.0, pmax: 6.0, pdef: 5.6,
     rent: {days:2, dlo:70, dhi:160, ddef:115, label:'8/23–8/24（2 天＋單程）', note:'8/23 為週日：LAX 點 24 小時營業但含機場費率，市區分店較便宜但需確認週日有開；異地費已攤入日租上限'},
     days: [
-      {d:'Day 1', t:'8/23 早上取車 → Malibu → Santa Barbara → SLO 強迫補滿 → Morro Bay → 宿 Cambria', mi:'約 230 哩'},
+      {d:'Day 1', t:'8/23 早上取車 → Malibu → Santa Barbara → 丹麥村 → Morro Bay → 宿 Cambria', mi:'約 230 哩'},
       {d:'Day 2', t:'8/24 清晨出發 → Ragged Point → 大蘇爾 → Bixby Bridge → Monterey → Santa Cruz → Sunnyvale 還車', mi:'約 225 哩'}
     ],
     stops: [
@@ -261,7 +279,7 @@ function boundsOf(ids){
 function show(routeId){
   current=routeId;
   Object.values(layerGroups).forEach(g=>map.removeLayer(g));
-  const ids = routeId==='all'? Object.keys(ROUTES) : [routeId];
+  const ids = (routeId==='all'||routeId==='tl')? Object.keys(ROUTES) : [routeId];
   ids.forEach(id=>layerGroups[id].addTo(map));
   map.fitBounds(boundsOf(ids).pad(0.12));
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.route===routeId));
@@ -277,6 +295,46 @@ function calc(r, price){
   const usd = gal*price;
   return {gal, usd, nt: usd*rate()};
 }
+
+const SEGC = {bay:'#8b8778', r1:'#4a7c59', r2:'#c08a2d', r3:'#b0492e', la:'#8b8778', r4:'#33688f'};
+const TIMELINE = [
+  {seg:'灣區 8/6–8', c:SEGC.bay, days:[
+    {d:'8/6', w:'四', t:'09:55 高雄 → 成田 → 10:55 抵舊金山；San Jose 市區', tags:[['fly','航班']]},
+    {d:'8/7', w:'五', t:'矽谷園區巡禮（Apple Park・電腦歷史博物館・Google・Nvidia）', tags:[]},
+    {d:'8/8', w:'六', t:'Napa Valley 一日遊', tags:[]}
+  ]},
+  {seg:'優勝美地 8/9–10（自家車）', c:SEGC.r1, go:'r1', days:[
+    {d:'8/9', w:'日', t:'開自家車進園 → 谷地 → 宿 Ahwahnee', tags:[['fuel','加油：Manteca']]},
+    {d:'8/10', w:'一', t:'清晨谷地＋Glacier Point → 返回灣區', tags:[]}
+  ]},
+  {seg:'大蒂頓＋黃石 8/11–15（Pacifica）', c:SEGC.r2, go:'r2', days:[
+    {d:'8/11', w:'二', t:'09:10 SFO → 12:31 JAC，13:30 取車 → 宿 Jackson Lake Lodge', tags:[['fly','航班'],['car','取車'],['fuel','加油：Jackson']]},
+    {d:'8/12', w:'三', t:'大蒂頓遊覽 → 北上進黃石 → 宿 Canyon Lodge', tags:[]},
+    {d:'8/13', w:'四', t:'黃石全日（Lamar／猛獁／間歇泉區）', tags:[['fuel','加油：西黃石']]},
+    {d:'8/14', w:'五', t:'黃石南下出園 → 宿 Jackson 鎮 airbnb', tags:[]},
+    {d:'8/15', w:'六', t:'鎮上遊覽 → 14:00 前還車 → 16:25 JAC 經 DEN 20:51 抵 LAS，宿賭城', tags:[['fuel','加油：Jackson'],['car','還車'],['fly','航班']]}
+  ]},
+  {seg:'大峽谷北緣＋錫安 8/15–19（7 人座）', c:SEGC.r3, go:'r3', days:[
+    {d:'8/15', w:'六', t:'晚間 LAS 取 7 人座（或 8/16 一早取，以訂單為準）', tags:[['car','取車']]},
+    {d:'8/16', w:'日', t:'維加斯 → 佩吉，傍晚馬蹄灣', tags:[['fuel','加油：維加斯']]},
+    {d:'8/17', w:'一', t:'上羚羊導覽 → 大峽谷北緣來回（約 250 哩）→ 宿佩吉', tags:[]},
+    {d:'8/18', w:'二', t:'佩吉 → 東門進錫安 → 宿 Springdale', tags:[['fuel','加油：佩吉']]},
+    {d:'8/19', w:'三', t:'錫安峽谷 → 回賭城還車 → 16:15 LAS → 17:30 LAX，宿 Santa Monica', tags:[['car','還車'],['fly','航班']]}
+  ]},
+  {seg:'洛杉磯 8/19–22（Uber／Waymo）', c:SEGC.la, days:[
+    {d:'8/20', w:'四', t:'Getty Center・Griffith 天文台', tags:[]},
+    {d:'8/21', w:'五', t:'USS Iowa 戰艦', tags:[]},
+    {d:'8/22', w:'六', t:'購物日', tags:[]}
+  ]},
+  {seg:'一號公路 8/23–24（租車單程）', c:SEGC.r4, go:'r4', days:[
+    {d:'8/23', w:'日', t:'市區分店取車（週日先確認營業）→ 北上經 Santa Barbara・丹麥村・Morro Rock → 宿 Cambria', tags:[['car','取車'],['fuel','加油：SLO']]},
+    {d:'8/24', w:'一', t:'Hearst Castle・McWay Falls・Bixby Bridge → 返灣區還車', tags:[['car','還車']]}
+  ]},
+  {seg:'收尾 8/25–26', c:SEGC.bay, days:[
+    {d:'8/25', w:'二', t:'舊金山市區（Caltrain＋Muni＋Waymo）', tags:[]},
+    {d:'8/26', w:'三', t:'12:25 舊金山 → 成田 → 21:00 抵高雄', tags:[['fly','航班']]}
+  ]}
+];
 
 function routeCard(id){
   const r = ROUTES[id];
@@ -316,7 +374,19 @@ function routeCard(id){
 
 function renderPanel(routeId){
   const p = document.getElementById('panel');
-  if(routeId==='all'){
+  if(routeId==='tl'){
+    p.innerHTML = `<h2>行程時間軸 8/6–8/26</h2>
+      <p class="veh">一天一列；有色路段可點擊跳到該路線的地圖與試算</p>
+      ${TIMELINE.map(seg=>`
+        <div class="tl-seg"><span class="swatch" style="background:${seg.c}"></span>${seg.seg}</div>
+        ${seg.days.map(d=>`
+          <div class="tl-day${seg.go?' link':''}" style="border-left-color:${seg.c}" ${seg.go?`data-goto="${seg.go}"`:''}>
+            <span class="tl-date">${d.d}<small>週${d.w}</small></span>
+            <span>${d.t}${d.tags.length?` <span class="tl-tags">${d.tags.map(t=>`<span class="tl-tag ${t[0]}">${t[1]}</span>`).join('')}</span>`:''}</span>
+          </div>`).join('')}`).join('')}
+      <div class="warnbox">航班時間以當地時間標示；細部景點以行程文件為準，此處只保留「今天往哪走、車與油的動作」。</div>`;
+    p.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>show(el.dataset.goto)));
+  } else if(routeId==='all'){
     p.innerHTML = `<h2>總覽 OVERVIEW</h2>
       <p class="veh">四條路線合計試算（各以預設油價計）</p>
       ${Object.keys(ROUTES).map(id=>{
