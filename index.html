@@ -25,8 +25,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .band h1{font-family:'Oswald','Noto Sans TC',sans-serif;font-weight:600;font-size:24px;letter-spacing:.5px}
 .band .sub{font-size:13px;color:#c9c5bb}
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:1001;overflow-x:auto}
-.tab{flex:1;min-width:120px;padding:12px 10px;border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);border-top:4px solid transparent;white-space:nowrap}
-.tab .en{display:block;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.tab{flex:1 0 auto;min-width:0;padding:12px 20px;border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);border-top:4px solid transparent;white-space:nowrap;text-align:center}
+.tab .en{display:block;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:center}
 .tab.active{color:var(--ink);background:#fff}
 .tab.active[data-route="all"]{border-top-color:var(--ink)}
 .tab.active[data-route="r1"]{border-top-color:var(--r1)}
@@ -100,7 +100,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   <button class="tab" data-route="r1"><span class="en">Yosemite</span>1 優勝美地</button>
   <button class="tab" data-route="r2"><span class="en">Yellowstone</span>2 大蒂頓＋黃石</button>
   <button class="tab" data-route="r3"><span class="en">Canyon &amp; Zion</span>3 大峽谷＋錫安</button>
-  <button class="tab" data-route="r4"><span class="en">Highway 1</span>4 一號公路</button>
+  <button class="tab" data-route="r4"><span class="en">L.A. &amp; Highway 1</span>4 洛杉磯＋一號公路</button>
   <button class="tab" data-route="tl"><span class="en">Timeline</span>時間軸 8/6–26</button>
 </nav>
 
@@ -206,27 +206,35 @@ const ROUTES = {
     warn: '北緣一日讓總里程從 600 上修到約 800 哩、油錢約 $165–200；8/19 還車前在維加斯近郊順路加滿即可（離 Strip 遠一點的站較便宜），航班 16:15、建議 13:30 前到還車中心。'
   },
   r4: {
-    name: '4. 洛杉磯 到 桑尼維爾（一號公路單程）', color: '#33688f',
+    name: '4. 洛杉磯 ＋ 一號公路（LAX 取車、灣區還車）', color: '#33688f',
     veh: '中型 SUV（約 24 mpg）· 8/19 LAX 取車–8/24 灣區還車 · 含 LA 市區用車 · 宿 Morro Bay',
-    miles: 565, mpg: 24, pmin: 5.0, pmax: 6.0, pdef: 5.6,
+    miles: 620, mpg: 24, pmin: 5.0, pmax: 6.0, pdef: 5.6,
     rent: {days:5, dlo:70, dhi:160, ddef:115, label:'8/19 LAX 取–8/24 灣區還（5 天）', note:'LAX 取車含機場費率；異地費（LAX→灣區）多數大公司免收或 $50–100，已攤入日租上限'},
     days: [
-      {d:'8/19–22', t:'LAX 取車後市區用車（Getty、Griffith、USS Iowa、購物中心）', mi:'約 105 哩'},
-      {d:'8/23', t:'Santa Monica 出發 → Malibu → Santa Barbara → 丹麥村 → 宿 Morro Bay', mi:'約 220 哩'},
+      {d:'8/19', t:'LAX 取車 → 宿 Residence Inn LAX/El Segundo', mi:'約 5 哩'},
+      {d:'8/20', t:'USS Iowa → 瑪麗皇后號 → Del Amo 購物中心', mi:'約 45 哩'},
+      {d:'8/21', t:'蓋蒂中心 → 回飯店休息 → 道奇體育場球賽', mi:'約 75 哩'},
+      {d:'8/22', t:'農夫市集 ＆ The Grove → 格里斐斯天文台', mi:'約 40 哩'},
+      {d:'8/23', t:'退房北上 → 聖塔芭芭拉 → 丹麥村 → 宿 Morro Bay', mi:'約 215 哩'},
       {d:'8/24', t:'清晨出發 → Cambria → Ragged Point → 大蘇爾 → Bixby Bridge → Monterey → Sunnyvale 還車', mi:'約 240 哩'}
     ],
     stops: [
+      {n:'Residence Inn LAX/El Segundo（8/19–22 住宿）', lat:33.9192, lng:-118.3887, k:'sight', note:'四晚基地，停車場寬敞；過夜停車費另計，記帳歸雜支。'},
+      {n:'蓋蒂中心 Getty Center', lat:34.0780, lng:-118.4741, k:'warn', note:'停車場約 $25，館內免費接駁電車登頂。'},
+      {n:'道奇體育場 Dodger Stadium', lat:34.0739, lng:-118.2400, k:'warn', note:'建議線上預購停車位，預留 45–60 分鐘車程避塞。'},
+      {n:'格里斐斯天文台', lat:34.1184, lng:-118.3004, k:'warn', note:'山頂停車位少，週一休館；傍晚上山看夕陽與夜景。'},
       {n:'L.A. 郊區（8/23 出發前加滿）', lat:34.0195, lng:-118.4912, k:'fuel', note:'市區用車期間隨時補；8/23 北上前用 Costco 或比價 App 加滿。'},
       {n:'聖路易斯-奧比斯保 SLO（強迫補滿）', lat:35.2828, lng:-120.6596, k:'fuel', note:'進大蘇爾前最後的大城，務必補滿。'},
       {n:'Morro Bay（8/23 過夜）', lat:35.3658, lng:-120.8499, k:'sight', note:'8/23 夜宿於此；鎮上油價正常，晚上或隔天一早順路加滿。'},
       {n:'Cambria（進大蘇爾前最後補滿）', lat:35.5641, lng:-121.0807, k:'fuel', note:'8/24 上午經過，若前晚沒加滿務必在此補到滿，之後 90 哩幾乎無平價油。'},
       {n:'大蘇爾 Big Sur', lat:36.2704, lng:-121.8081, k:'warn', note:'單線管制原訂至 7/31、8 月下旬應已結束，出發前查 Caltrans 確認；Gorda 油價全美最貴等級，勿在此加油。'},
       {n:'Bixby Bridge', lat:36.3715, lng:-121.9016, k:'sight', note:'經典拍照點。'},
+      {n:'丹麥村 Solvang', lat:34.5958, lng:-120.1376, k:'sight', note:'8/23 下午茶；鎮上有免費大型平面停車場，大車好停。'},
       {n:'Monterey', lat:36.6002, lng:-121.8947, k:'sight', note:'回到正常油價區。'},
       {n:'Sunnyvale（終點）', lat:37.3688, lng:-122.0363, k:'sight', note:'單程終點。'}
     ],
     paths: [
-      {pts:[[34.0195,-118.4912],[34.0259,-118.7798],[34.2805,-119.2945],[34.4208,-119.6982],[34.9530,-120.4357],[35.2828,-120.6596],[35.3658,-120.8499]], dash:null, lab:'8/23 南段（宿 Morro Bay）'},
+      {pts:[[33.9192,-118.3887],[34.0259,-118.7798],[34.2805,-119.2945],[34.4208,-119.6982],[34.5958,-120.1376],[34.9530,-120.4357],[35.2828,-120.6596],[35.3658,-120.8499]], dash:null, lab:'8/23 南段（經丹麥村・宿 Morro Bay）'},
       {pts:[[35.3658,-120.8499],[35.5641,-121.0807],[35.7794,-121.3283],[36.2704,-121.8081],[36.3715,-121.9016],[36.6002,-121.8947],[36.9741,-122.0308],[37.3688,-122.0363]], dash:null, lab:'8/24 北段（大蘇爾→灣區還車）'}
     ],
     warn: '一號公路全線通行中；Big Sur 以北的單線管制原訂至 7/31，你 8/23 出發時應已結束，但出發前仍建議查一次 Caltrans（quickmap.dot.ca.gov）確認路況。加州油價回落中，8 月下旬平均油價有望落在 $5.0–5.5。'
@@ -322,15 +330,15 @@ const TIMELINE = [
     {d:'8/16', w:'日', t:'維加斯 → 佩吉，傍晚馬蹄灣', tags:[['fuel','加油：維加斯']]},
     {d:'8/17', w:'一', t:'上羚羊導覽 → 大峽谷北緣來回（約 250 哩）→ 宿佩吉', tags:[]},
     {d:'8/18', w:'二', t:'佩吉 → 東門進錫安 → 宿 Springdale', tags:[['fuel','加油：佩吉']]},
-    {d:'8/19', w:'三', t:'錫安峽谷 → 回賭城還車 → 16:15 LAS → 17:30 LAX，LAX 取車 → 宿 Santa Monica', tags:[['car','還車'],['fly','航班'],['car','LAX 取車']]}
+    {d:'8/19', w:'三', t:'錫安峽谷 → 回賭城還車 → 16:15 LAS → 17:30 LAX，LAX 取車 → 宿 Residence Inn LAX', tags:[['car','還車'],['fly','航班'],['car','LAX 取車']]}
   ]},
   {seg:'洛杉磯 8/19–22（LAX 取車自駕）', c:SEGC.la, go:'r4', days:[
-    {d:'8/20', w:'四', t:'Getty Center・Griffith 天文台', tags:[]},
-    {d:'8/21', w:'五', t:'USS Iowa 戰艦', tags:[]},
-    {d:'8/22', w:'六', t:'購物日', tags:[]}
+    {d:'8/20', w:'四', t:'USS Iowa・瑪麗皇后號・Del Amo 購物中心（宿 Residence Inn LAX）', tags:[]},
+    {d:'8/21', w:'五', t:'蓋蒂中心 → 道奇體育場球賽（停車位建議預購）', tags:[]},
+    {d:'8/22', w:'六', t:'農夫市集 ＆ The Grove → 格里斐斯天文台夜景（週一休館）', tags:[]}
   ]},
   {seg:'一號公路 8/23–24（續用同一台車）', c:SEGC.r4, go:'r4', days:[
-    {d:'8/23', w:'日', t:'Santa Monica 出發，北上經 Santa Barbara・丹麥村・Morro Rock → 宿 Morro Bay', tags:[['fuel','加油：L.A.']]},
+    {d:'8/23', w:'日', t:'退房北上，經聖塔芭芭拉・丹麥村 → 宿 Morro Bay（莫羅巨石夕陽）', tags:[['fuel','加油：L.A.']]},
     {d:'8/24', w:'一', t:'Hearst Castle・McWay Falls・Bixby Bridge → 返灣區還車', tags:[['fuel','加油：Cambria'],['car','還車']]}
   ]},
   {seg:'收尾 8/25–26', c:SEGC.bay, days:[
